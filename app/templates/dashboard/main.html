@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Crypto Watchdog</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+
+<body>
+  {% include 'dashboard/header.html' %}
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-header">
+            Cryptocurrencies
+          </div>
+          <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{{ url_for('dashboard.index', currency='btc') }}">Bitcoin</a></li>
+                <li class="list-group-item"><a href="{{ url_for('dashboard.index', currency='eth') }}">Ethereum</a></li>
+                <li class="list-group-item"><a href="{{ url_for('dashboard.index', currency='xrp') }}">Ripple</a></li>
+                <li class="list-group-item"><a href="{{ url_for('dashboard.index', currency='doge') }}">Dogecoin</a></li>
+            </ul>          
+            </div>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <div class="card">
+          <div class="card-body">
+            <canvas id="cryptoChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/2.0.0/chartjs-adapter-moment.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Extract prices and timestamps from the data
+      var pricesAndTimestamps = {{ prices_and_timestamps | safe }};
+
+      // Extract price and timestamp arrays from the serialized data
+      var prices = pricesAndTimestamps.map(function(entry) {
+        return entry.price;
+      });
+      var timestamps = pricesAndTimestamps.map(function(entry) {
+        return new Date(entry.timestamp * 1000)
+        // return entry.timestamp;
+      });
+
+      console.log(prices);
+      console.log(timestamps);
+
+      // Create a Chart.js line chart
+      var ctx = document.getElementById('cryptoChart').getContext('2d');
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timestamps, // Convert timestamps to Date objects
+          datasets: [{
+            label: '{{ currency_name }} [CAD price]',
+            data: prices,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0, 0, 255, 0.1)',
+            fill: true
+          }]
+        },
+        options: {
+            scales: {
+                x: {
+                    display: false
+                },
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+        
+      });
+    });
+  </script>
+</body>
+
+</html>
