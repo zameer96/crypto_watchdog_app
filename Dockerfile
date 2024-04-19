@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# FROM python:3.11-slim-buster
-FROM 3.11-bullseye
+FROM python:3.8-slim-buster
 
 WORKDIR /python-docker
 
