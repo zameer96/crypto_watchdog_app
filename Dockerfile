@@ -2,6 +2,11 @@
 
 FROM python:3.8-slim-buster
 
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /python-docker
 
 COPY requirements.txt requirements.txt
